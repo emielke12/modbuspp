@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>modbuspp</name>
+  <version>1.0.0</version>
+  <description>ROS wrapper for ModBus Communication C++ API</description>
+  <maintainer email="emielke2@mmm.com">Erich Mielke</maintainer>
+  <license>TODO</license>
+
+  <!-- <url type="website">http://wiki.ros.org/ati_netft</url> -->
+  <author email="emielke2@mmm.com">Erich Mielke</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+
+</package>
