@@ -55,18 +55,18 @@ void Modbus::modbusSetSlaveId(int id) {
  */
 bool Modbus::modbusConnect() {
     if(HOST == "" || PORT == 0) {
-        std::cout << "Missing Host and Port" << std::endl;
+        std::cout << "MODBUS: Missing Host and Port" << std::endl;
         return false;
     } else {
-        std::cout << "Found Proper Host "<< HOST << " and Port " <<PORT <<std::endl;
+        std::cout << "MODBUS: Found Proper Host "<< HOST << " and Port " <<PORT <<std::endl;
     }
 
     socket_ = socket(AF_INET, SOCK_STREAM, 0);
     if(socket_ == -1) {
-        std::cout <<"Error Opening Socket" <<std::endl;
+        std::cout <<"MODBUS: Error Opening Socket" <<std::endl;
         return false;
     } else {
-        std::cout <<"Socket Opened Successfully" << std::endl;
+        std::cout <<"MODBUS: Socket Opened Successfully" << std::endl;
     }
 
     server_.sin_family = AF_INET;
@@ -74,11 +74,11 @@ bool Modbus::modbusConnect() {
     server_.sin_port = htons(PORT);
 
     if (connect(socket_, (struct sockaddr*)&server_, sizeof(server_)) < 0) {
-        std::cout<< "Connection Error" << std::endl;
+        std::cout<< "MODBUS: Connection Error" << std::endl;
         return false;
     }
 
-    std::cout<< "Connected" <<std::endl;
+    std::cout<< "MODBUS: Connected" <<std::endl;
     connected_ = true;
     return true;
 }
@@ -89,7 +89,7 @@ bool Modbus::modbusConnect() {
  */
 void Modbus::modbusClose() {
     close(socket_);
-    std::cout <<"Socket Closed" <<std::endl;
+    std::cout <<"MODBUS: Socket Closed" <<std::endl;
 }
 
 

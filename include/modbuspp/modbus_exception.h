@@ -13,14 +13,14 @@ using namespace std;
 /**
  * Modbus Exeception Super Class
  *
- * Throwed when a exception or errors happens in modbus protocol
+ * Thrown when a exception or errors happens in modbus protocol
  */
 class ModbusException : public exception {
 public:
     string msg;
     virtual const char* what() const throw()
     {
-        return "A Error In Modbus Happened!";
+        return "Modbus Error.";
     }
 };
 
@@ -29,13 +29,13 @@ public:
 /**
  * Connection Issue
  *
- * Throwed when a connection issues happens between modbus client and server
+ * Thrown when a connection issues happens between modbus client and server
  */
 class ModbusConnectException: public ModbusException {
 public:
     virtual const char* what() const throw()
     {
-        return "Having Modbus Connection Problem";
+        return "Modbus Connection Problem.";
     }
 };
 
@@ -44,13 +44,13 @@ public:
 /**
  * Illegal Function
  *
- * Throwed when modbus server return error response function 0x01
+ * Thrown when modbus server return error response function 0x01
  */
 class ModbusIllegalFunctionException: public ModbusException {
 public:
     virtual const char* what() const throw()
     {
-        return "Illegal Function";
+        return "Illegal Modbus Function.";
     }
 };
 
@@ -59,14 +59,14 @@ public:
 /**
  * Illegal Address
  *
- * Throwed when modbus server return error response function 0x02
+ * Thrown when modbus server return error response function 0x02
  */
 class ModbusIllegalAddressException: public ModbusException {
 public:
     string msg = "test";
     const char* what() const throw()
     {
-        return "Illegal Address";
+        return "Illegal Modbus Address.";
     }
 };
 
@@ -75,13 +75,13 @@ public:
 /**
  * Illegal Data Vlaue
  *
- * Throwed when modbus server return error response function 0x03
+ * Thrown when modbus server return error response function 0x03
  */
 class ModbusIllegalDataValueException: public ModbusException {
 public:
     virtual const char* what() const throw()
     {
-        return "Illegal Data Value";
+        return "Illegal Modbus Data Value.";
     }
 };
 
@@ -90,13 +90,13 @@ public:
 /**
  * Server Failure
  *
- * Throwed when modbus server return error response function 0x04
+ * Thrown when modbus server return error response function 0x04
  */
 class ModbusServerFailureException: public ModbusException {
 public:
     virtual const char* what() const throw()
     {
-        return "Server Failure";
+        return "Modbus Server Failure.";
     }
 };
 
@@ -105,13 +105,13 @@ public:
 /**
  * Acknowledge
  *
- * Throwed when modbus server return error response function 0x05
+ * Thrown when modbus server return error response function 0x05
  */
 class ModbusAcknowledgeException: public ModbusException {
 public:
     virtual const char* what() const throw()
     {
-        return "Acknowledge";
+        return "Modbus Acknowledge Error.";
     }
 };
 
@@ -120,13 +120,13 @@ public:
 /**
  * Server Busy
  *
- * Throwed when modbus server return error response function 0x06
+ * Thrown when modbus server return error response function 0x06
  */
 class ModbusServerBusyException: public ModbusException {
 public:
     virtual const char* what() const throw()
     {
-        return "Server Busy";
+        return "Modbus Server Busy.";
     }
 };
 
@@ -134,13 +134,13 @@ public:
 /**
  * Gate Way Problem
  *
- * Throwed when modbus server return error response function 0x0A and 0x0B
+ * Thrown when modbus server return error response function 0x0A and 0x0B
  */
 class ModbusGatewayException: public ModbusException {
 public:
     virtual const char* what() const throw()
     {
-        return "Gateway Problem";
+        return "Modbus Gateway Problem.";
     }
 };
 
@@ -148,13 +148,13 @@ public:
 /**
  * Buffer Exception
  *
- * Throwed when buffer is too small for the data to be storaged.
+ * Thrown when buffer is too small for the data to be storaged.
  */
 class ModbusBufferException: public ModbusException {
 public:
     virtual const char* what() const throw()
     {
-        return "Size of Buffer Is too Small!";
+        return "Size of Modbus Buffer Is too Small.";
     }
 };
 
@@ -163,13 +163,13 @@ public:
 /**
  * Amount Exception
  *
- * Throwed when the address or amount input is mismatching.
+ * Thrown when the address or amount input is mismatching.
  */
 class ModbusAmountException: public ModbusException {
 public:
     virtual const char* what() const throw()
     {
-        return "Too much Data!";
+        return "Modbus Address too Large.";
     }
 };
 
