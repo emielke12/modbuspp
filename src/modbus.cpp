@@ -1,9 +1,12 @@
 //
 // Created by Fanzhe on 5/28/2017.
 //
+// Edited by: Erich Mielke (3M)
+// Date: 1-31-2019
 
 #include "modbuspp/modbus.h"
 #include <arpa/inet.h>
+
 using namespace std;
 using namespace modbuspp;
 
@@ -53,7 +56,7 @@ void Modbus::modbusSetSlaveId(int id) {
  * Build up a Modbus/TCP Connection
  * @return   If A Connection Is Successfully Built
  */
-bool Modbus::modbusConnect() {
+bool Modbus::modbusConnect(int timeout) {
     if(HOST == "" || PORT == 0) {
         std::cout << "MODBUS: Missing Host and Port" << std::endl;
         return false;
@@ -63,22 +66,74 @@ bool Modbus::modbusConnect() {
 
     socket_ = socket(AF_INET, SOCK_STREAM, 0);
     if(socket_ == -1) {
-        std::cout <<"MODBUS: Error Opening Socket" <<std::endl;
+        std::cout <<"MODBUS: Error Creating Socket" <<std::endl;
         return false;
     } else {
-        std::cout <<"MODBUS: Socket Opened Successfully" << std::endl;
+        std::cout <<"MODBUS: Socket Created Successfully" << std::endl;
     }
 
     server_.sin_family = AF_INET;
     server_.sin_addr.s_addr = inet_addr(HOST.c_str());
     server_.sin_port = htons(PORT);
 
-    if (connect(socket_, (struct sockaddr*)&server_, sizeof(server_)) < 0) {
-        std::cout<< "MODBUS: Connection Error" << std::endl;
-        return false;
+    // Set Non-blocking
+    block_arg_ = fcntl(socket_, F_GETFL, NULL);
+    block_arg_ |= O_NONBLOCK;
+    fcntl(socket_, F_SETFL, block_arg_);
+
+    // Attempt to connect to socket
+    if (connect(socket_, (struct sockaddr*)&server_, sizeof(server_)) < 0)
+    {
+      if (errno == EINPROGRESS)
+      {
+	std::cout << "MODBUS: Waiting for Connection" << std::endl;
+	std::cout << "MODBUS: Timing out in: " << timeout << " seconds" << std::endl;
+	tv_.tv_sec = timeout;
+	tv_.tv_usec = 0;
+	FD_ZERO(&socket_fd_);
+	FD_SET(socket_, &socket_fd_);
+	res_ = select(socket_ + 1, NULL, &socket_fd_, NULL, &tv_);
+	if (res_ > 0)
+	{
+	  lon_ = sizeof(int);
+	  if (getsockopt(socket_, SOL_SOCKET, SO_ERROR, &valopt_, &lon_) > 0)
+	  {
+	    if (valopt_)
+	    {
+	      std::cout << "MODBUS: Delayed Connection" << std::endl;
+	      return false;
+	    }
+	    std::cout << "MODBUS: Connected" << std::endl;
+	  }
+	  else
+	  {
+	    std::cout << "MODBUS: getsockopt() error" << std::endl;
+	    return false;
+	  }
+	}
+	else if (res_ < 0)
+	{
+	  std::cout << "MODBUS: Error in Connection" << std::endl;
+	  return false;
+	}
+	else
+	{
+	  std::cout << "MODBUS: Timed out waiting for Connection" << std::endl;
+	  return false;
+	}
+      }
+    }
+    else
+    {
+      std::cout << "MODBUS: Connected" << std::endl;
     }
 
-    std::cout<< "MODBUS: Connected" <<std::endl;
+    // Set back to non-blocking
+    block_arg_ = fcntl(socket_, F_GETFL, NULL);
+    block_arg_ &= ~O_NONBLOCK;
+    fcntl(socket_, F_SETFL, block_arg_);
+
+    // Return connected
     connected_ = true;
     return true;
 }

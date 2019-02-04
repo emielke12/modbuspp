@@ -10,7 +10,15 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/ip.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <fcntl.h> 
 #include "modbus_exception.h"
+
 using namespace std;
 
 #define MAX_MSG_LENGTH 260
@@ -57,7 +65,13 @@ private:
     int slaveid_ ;
     string HOST;
     struct sockaddr_in server_;
-
+    fd_set socket_fd_;
+    long block_arg_;
+    struct timeval tv_;
+    socklen_t lon_;
+    int valopt_;
+    int res_;
+    
     void modbusBuildRequest(uint8_t *to_send,int address, int func);
 
     void modbusRead(int address, int amount, int func);
@@ -74,7 +88,7 @@ public:
     Modbus(string host);
     ~Modbus();
 
-    bool modbusConnect();
+    bool modbusConnect(int = 5);
     void modbusClose();
 
     void modbusSetSlaveId(int id);
