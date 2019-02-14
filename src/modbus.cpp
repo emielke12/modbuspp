@@ -76,51 +76,53 @@ bool Modbus::modbusConnect(int timeout) {
     server_.sin_addr.s_addr = inet_addr(HOST.c_str());
     server_.sin_port = htons(PORT);
 
+    // if (connect(socket_, (struct sockaddr*)&server_, sizeof(server_)) < 0) {
+    //   std::cout << "Connection Error" << std::endl;
+    //   return false;
+    // }
+
+    // std::cout << "Connected" << std::endl;
+    // connected_ = true;
+    // return true;
+
     // Set Non-blocking
     block_arg_ = fcntl(socket_, F_GETFL, NULL);
     block_arg_ |= O_NONBLOCK;
     fcntl(socket_, F_SETFL, block_arg_);
 
     // Attempt to connect to socket
-    if (connect(socket_, (struct sockaddr*)&server_, sizeof(server_)) < 0)
+    if (connect(socket_, (struct sockaddr*)&server_, sizeof(server_)) == -1)
     {
       if (errno == EINPROGRESS)
       {
-	std::cout << "MODBUS: Waiting for Connection" << std::endl;
-	std::cout << "MODBUS: Timing out in: " << timeout << " seconds" << std::endl;
-	tv_.tv_sec = timeout;
-	tv_.tv_usec = 0;
-	FD_ZERO(&socket_fd_);
-	FD_SET(socket_, &socket_fd_);
-	res_ = select(socket_ + 1, NULL, &socket_fd_, NULL, &tv_);
-	if (res_ > 0)
-	{
-	  lon_ = sizeof(int);
-	  if (getsockopt(socket_, SOL_SOCKET, SO_ERROR, &valopt_, &lon_) > 0)
-	  {
-	    if (valopt_)
-	    {
-	      std::cout << "MODBUS: Delayed Connection" << std::endl;
-	      return false;
-	    }
-	    std::cout << "MODBUS: Connected" << std::endl;
-	  }
-	  else
-	  {
-	    std::cout << "MODBUS: getsockopt() error" << std::endl;
+    	std::cout << "MODBUS: Waiting for Connection" << std::endl;
+    	std::cout << "MODBUS: Timing out in: " << timeout << " seconds" << std::endl;
+    	tv_.tv_sec = timeout;
+    	tv_.tv_usec = 0;
+    	FD_ZERO(&socket_fd_);
+    	FD_SET(socket_, &socket_fd_);
+    	res_ = select(socket_ + 1, NULL, &socket_fd_, NULL, &tv_);
+    	if (res_ > 0)
+    	{
+    	  lon_ = sizeof(int);
+    	  getsockopt(socket_, SOL_SOCKET, SO_ERROR, &valopt_, &lon_);
+	  if (valopt_)
+    	  {
+	    std::cout << "MODBUS: Delayed Connection" << std::endl;
 	    return false;
 	  }
-	}
-	else if (res_ < 0)
-	{
-	  std::cout << "MODBUS: Error in Connection" << std::endl;
-	  return false;
-	}
-	else
-	{
-	  std::cout << "MODBUS: Timed out waiting for Connection" << std::endl;
-	  return false;
-	}
+	  std::cout << "MODBUS: Connected" << std::endl;
+    	}
+    	else if (res_ < 0)
+    	{
+    	  std::cout << "MODBUS: Error in Connection" << std::endl;
+    	  return false;
+    	}
+    	else
+    	{
+    	  std::cout << "MODBUS: Timed out waiting for Connection" << std::endl;
+    	  return false;
+    	}
       }
     }
     else
