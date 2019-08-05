@@ -1,5 +1,5 @@
+*~
+*.pyc
+*.swp
 
-### CMake template
-.idea
-
-.DS_Store
+default_warehouse_mongo_db
